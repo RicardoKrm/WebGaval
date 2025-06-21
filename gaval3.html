@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS GAVAL - Gestión Inteligente de Flotas</title>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Inter de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease; /* Transición más suave para el modo claro/oscuro */
+        }
+        
+        /* Variables para el modo oscuro (Estilo Futurista - Colores más vivos) */
+        .dark-mode {
+            --bg-primary: #0D1117; /* Fondo muy oscuro, casi negro */
+            --bg-secondary: #161B22; /* Fondo de sección alterno */
+            --text-primary: #E6F0FF; /* Texto principal claro */
+            --text-secondary: #A0B0C0; /* Texto secundario gris azulado */
+            --accent: #00E0FF; /* Azul eléctrico / Cian brillante - muy vivo */
+            --accent-hover: #00BFFF; /* Cian un poco más oscuro al pasar el ratón */
+            
+            /* Fondos de tarjeta con más contraste para textos vivos */
+            --card-base-bg: #1F2937; /* Base para la mayoría de las tarjetas */
+            --card-service-bg: var(--card-base-bg);
+            --card-main-feature-bg: #2C3540; /* Fondo más oscuro para las nuevas cajas consolidadas */
+            --card-benefit-bg: #2C3540; /* Consistente con las cajas de funcionalidades */
+            --card-directed-bg: var(--card-base-bg);
+            --card-future-bg: var(--card-base-bg);
+
+            --input-bg: #2C3540;
+            --input-border: #4F5D73;
+            --input-placeholder: #B0C0D0;
+
+            /* Sombras de texto para títulos vibrantes */
+            --text-shadow-strong: 0 0 8px var(--accent);
+            --text-shadow-subtle: 0 0 4px rgba(0, 224, 255, 0.4);
+        }
+        
+        /* Variables para el modo claro (Estilo Limpio y Moderno) */
+        .light-mode {
+            --bg-primary: #F0F4F8; /* Fondo claro y limpio */
+            --bg-secondary: #E2E8F0; /* Fondo de sección alterno */
+            --text-primary: #1A202C; /* Texto principal oscuro */
+            --text-secondary: #4A5568; /* Texto secundario gris oscuro */
+            --accent: #0088FF; /* Azul vibrante - destaca en fondos claros */
+            --accent-hover: #0066CC; /* Azul un poco más oscuro al pasar el ratón */
+
+            /* Fondos de tarjeta que complementan los textos oscuros */
+            --card-base-bg: #FFFFFF;
+            --card-service-bg: var(--card-base-bg);
+            --card-main-feature-bg: #FFFFFF; /* Más claro para modo claro */
+            --card-benefit-bg: #FFFFFF; /* Consistente con funcionalidades */
+            --card-directed-bg: #F8FBFF;
+            --card-future-bg: #FFFFF0; 
+
+            --input-bg: #FFFFFF;
+            --input-border: #CBD5E0;
+            --input-placeholder: #A0AFC0;
+
+            /* Sombras de texto para títulos (más sutiles en modo claro) */
+            --text-shadow-strong: none;
+            --text-shadow-subtle: none;
+        }
+        
+        /* Aplicar variables CSS */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Alternar colores de fondo de sección para mejor diferenciación */
+        section:nth-of-type(odd) {
+            background-color: var(--bg-primary); /* Sección 1, 3, 5... */
+        }
+
+        section:nth-of-type(even) {
+            background-color: var(--bg-secondary); /* Sección 2, 4, 6... */
+        }
+        
+        /* Títulos principales con colores vivos y sombra de texto */
+        h1, h2 {
+            color: var(--text-primary); /* Default to primary text color */
+        }
+        .text-blue-400, .text-blue-600 { /* Specific classes for accent colors in titles */
+            color: var(--accent);
+            text-shadow: var(--text-shadow-strong);
+        }
+        .hero-content h1 {
+            color: var(--text-primary); /* Hero title is primary text color, but its accent part will get the glow */
+        }
+        .hero-content p {
+            text-shadow: var(--text-shadow-subtle);
+        }
+
+        /* Fondo para la sección Hero con imagen y overlay */
+        .hero-background {
+            background-image: url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .hero-background::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7); /* Overlay oscuro más intenso */
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Estilos generales de tarjeta y efectos hover */
+        .service-card, .feature-card, .benefit-card, .directed-card, .future-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 224, 255, 0.1); /* Sutil borde cian futurista */
+        }
+        .service-card { background-color: var(--card-service-bg); }
+        .feature-card { background-color: var(--card-main-feature-bg); } /* Para las nuevas cajas grandes */
+        .benefit-card { background-color: var(--card-benefit-bg); } /* Para las nuevas cajas grandes */
+        .directed-card { background-color: var(--card-directed-bg); }
+        .future-card { background-color: var(--card-future-bg); }
+
+        .service-card:hover, .feature-card:hover, .benefit-card:hover, .directed-card:hover, .future-card:hover {
+            transform: translateY(-10px); /* Más pronunciado */
+            box-shadow: 0 20px 40px rgba(0, 224, 255, 0.2), 0 0 15px var(--accent); /* Sombra con glow */
+        }
+        
+        .feature-icon, .service-icon { /* Usar el color accent para los círculos de íconos */
+            background-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent); /* Glow para los íconos */
+            transition: all 0.3s ease;
+        }
+        .feature-icon:hover, .service-icon:hover {
+             transform: scale(1.1);
+             box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* Toggle para dark/light mode */
+        .toggle-checkbox {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-label {
+            display: block;
+            width: 48px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-label::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background: var(--accent);
+        }
+        .toggle-checkbox:checked + .toggle-label::after {
+            transform: translateX(24px);
+        }
+
+        /* Animación de entrada para secciones (Scroll Reveal) */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px); /* Más desplazamiento */
+            transition: opacity 1s ease-out, transform 1s ease-out; /* Animación más lenta */
+        }
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-pop-in {
+            animation: popIn 1s ease-out forwards; /* Más lenta */
+            opacity: 0; /* Hidden by default */
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        /* Estilo para inputs y textareas */
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder,
+        textarea::placeholder {
+            color: var(--input-placeholder);
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--accent), 0 0 10px var(--accent); /* Glow al enfocar */
+        }
+
+        /* Botones principales */
+        button {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        button.bg-blue-600:hover {
+            box-shadow: 0 8px 20px rgba(0, 224, 255, 0.4), 0 0 15px var(--accent); /* Sombra con glow */
+        }
+        button.bg-transparent:hover {
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15), 0 0 10px rgba(255, 255, 255, 0.5); /* Sombra más tenue */
+        }
+
+        /* Enlaces de pie de página y redes sociales */
+        .footer-link, .social-icon {
+            transition: all 0.3s ease;
+        }
+        .footer-link:hover {
+            color: var(--accent);
+            text-shadow: 0 0 5px var(--accent);
+        }
+        .social-icon:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px var(--accent);
+            background-color: var(--accent); /* Cambia el color de fondo a accent */
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Barra de navegación -->
+    <nav class="bg-gray-900 text-white py-4 px-6 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-truck-moving text-blue-400 text-2xl animate-pulse" style="color: var(--accent);"></i>
+            <span class="text-2xl font-extrabold">TMS <span class="text-blue-400" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">GAVAL</span></span>
+        </div>
+        
+        <div class="hidden md:flex space-x-8">
+            <a href="#inicio" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Inicio</a>
+            <a href="#servicios" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Servicios</a>
+            <a href="#funcionalidades-software" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Funcionalidades</a>
+            <a href="#beneficios-seccion" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Beneficios</a>
+            <a href="#futuras-implementaciones" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Futuro</a>
+            <a href="#contacto" class="hover:text-blue-400 transition duration-300 transform hover:scale-105 font-medium" style="color: var(--text-secondary); hover-color: var(--accent);">Contacto</a>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="relative inline-block w-12 h-6 mr-2 align-middle select-none">
+                <input type="checkbox" id="toggle" class="toggle-checkbox"/>
+                <label for="toggle" class="toggle-label"></label>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-bold shadow-md transition duration-300 transform hover:scale-105" style="background-color: var(--accent); hover-background-color: var(--accent-hover);">
+                Iniciar Sesión <i class="fas fa-sign-in-alt ml-2"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sección Hero -->
+    <section id="inicio" class="hero-background min-h-screen flex items-center justify-center text-center text-white px-4 py-20 relative overflow-hidden">
+        <div class="hero-content max-w-4xl animate-pop-in">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-2xl">
+                Gestión Inteligente de <span class="text-blue-400" style="color: var(--accent); text-shadow: var(--text-shadow-strong);">Flotas y Buses</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90 drop-shadow-lg" style="color: var(--text-secondary); text-shadow: var(--text-shadow-subtle);">
+                Optimiza el mantenimiento, reduce costos y aumenta la disponibilidad de tu flota con nuestro sistema especializado.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mt-8">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full font-bold text-xl shadow-xl transition duration-300 transform hover:-translate-y-1 hover:scale-105" style="background-color: var(--accent); hover-background-color: var(--accent-hover);">
+                    Solicitar Demo <i class="fas fa-play-circle ml-2"></i>
+                </button>
+                <button class="bg-transparent hover:bg-blue-600 text-white border-2 border-white px-10 py-4 rounded-full font-bold text-xl shadow-xl transition duration-300 transform hover:-translate-y-1 hover:scale-105" style="border-color: var(--accent); hover-background-color: var(--accent);">
+                    Ver Video <i class="fas fa-video ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Frase Vendedora -->
+    <section class="py-20 px-6 text-center fade-in" style="background-color: var(--bg-primary);">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4" style="color: var(--text-primary);">
+                “EL SOFTWARE DE MANTENCIÓN DE FLOTAS QUE TU EMPRESA <span class="text-blue-600" style="color: var(--accent); text-shadow: var(--text-shadow-strong);">REALMENTE NECESITA</span>”
+            </h2>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto" style="color: var(--text-secondary);">
+                Una solución integral diseñada para potenciar tu eficiencia operativa y disparar tu rentabilidad.
+            </p>
+        </div>
+    </section>
+
+    <!-- Sección Servicios -->
+    <section id="servicios" class="py-20 px-6 fade-in" style="background-color: var(--bg-secondary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Nuestros <span class="text-blue-600" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">Servicios Clave</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Soluciones especializadas para la gestión eficiente y el rendimiento óptimo de tus flotas vehiculares.
+            </p>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                <!-- Servicio 1 -->
+                <div class="service-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-service-bg);">
+                    <div class="service-icon w-20 h-20 rounded-full flex items-center justify-center mb-6 text-white text-4xl shadow-lg" style="background-color: var(--accent);">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3" style="color: var(--text-primary);">Mantenimiento Predictivo</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Anticipamos fallas antes que ocurran mediante análisis de datos avanzados y patrones de uso, minimizando interrupciones.</p>
+                </div>
+                
+                <!-- Servicio 2 -->
+                <div class="service-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-service-bg);">
+                    <div class="service-icon w-20 h-20 rounded-full flex items-center justify-center mb-6 text-white text-4xl shadow-lg" style="background-color: var(--accent);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3" style="color: var(--text-primary);">Análisis de Costos</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Optimización del TCO (Costo Total de Propiedad) con reportes detallados y personalizables por vehículo, ruta y operación.</p>
+                </div>
+                
+                <!-- Servicio 3 -->
+                <div class="service-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-service-bg);">
+                    <div class="service-icon w-20 h-20 rounded-full flex items-center justify-center mb-6 text-white text-4xl shadow-lg" style="background-color: var(--accent);">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3" style="color: var(--text-primary);">Gestión de Órdenes</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Sistema completo para la creación, seguimiento y análisis de órdenes de trabajo, asegurando un flujo de mantenimiento impecable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Funcionalidades del Software (Consolidada) -->
+    <section id="funcionalidades-software" class="py-20 px-6 fade-in" style="background-color: var(--bg-primary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Funcionalidades y <span class="text-blue-400" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">Ventajas Técnicas</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Herramientas poderosas y tecnología avanzada para una gestión de flota robusta y sin precedentes.
+            </p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <!-- Bloque Consolidado 1: Gestión Centralizada de Mantenimiento -->
+                <div class="feature-card rounded-2xl p-8 transition duration-300" style="background-color: var(--card-main-feature-bg);">
+                    <div class="flex items-center mb-6">
+                        <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mr-4 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold" style="color: var(--text-primary);">Gestión Centralizada de Mantenimiento</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-4 pl-4 text-lg" style="color: var(--text-secondary);">
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Pizarra de Mantenimiento:</span> Visualiza de forma clara y organizada el estado actual y programado de todos tus mantenimientos.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Gestión de OT Preventivas:</span> Planifica y ejecuta órdenes de trabajo preventivas proactivamente para evitar fallas costosas.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Gestión de OT Correctivas:</span> Administra y resuelve eficientemente las órdenes de trabajo correctivas, minimizando el tiempo de inactividad.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Alertas de Mantenimiento:</span> Recibe notificaciones automáticas y personalizables para mantenimientos programados y eventos críticos.</li>
+                    </ul>
+                </div>
+                
+                <!-- Bloque Consolidado 2: Inteligencia Operativa y Financiera -->
+                <div class="feature-card rounded-2xl p-8 transition duration-300" style="background-color: var(--card-main-feature-bg);">
+                    <div class="flex items-center mb-6">
+                        <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mr-4 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold" style="color: var(--text-primary);">Inteligencia Operativa y Financiera</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-4 pl-4 text-lg" style="color: var(--text-secondary);">
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Dashboard Informativo y KPIs:</span> Obtén una visión general y detallada del rendimiento de tu flota con métricas clave en tiempo real, personalizables.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Reportes de Costos:</span> Analiza y controla los gastos asociados al mantenimiento, combustible e inventario para optimizar tu presupuesto.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Gestión de Inventario:</span> Controla tu stock de repuestos y materiales de mantenimiento, evitando quiebres de inventario y optimizando compras.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Análisis de Pareto Inteligente:</span> Identifica las fallas más frecuentes y sus causas raíz para priorizar acciones correctivas y mejorar la eficiencia de la flota.</li>
+                    </ul>
+                </div>
+
+                <!-- Bloque de Imagen para la Sección de Funcionalidades -->
+                <div class="lg:col-span-2 flex justify-center mt-10">
+                    <div class="relative group max-w-3xl w-full">
+                        <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                             alt="[Image of Dashboard TMS GAVAL in action]" 
+                             class="rounded-xl shadow-2xl border-4 border-blue-500 transform group-hover:scale-105 transition-transform duration-500 ease-in-out">
+                        <div class="absolute -bottom-6 -right-6 bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow-lg transform group-hover:translate-x-1 group-hover:translate-y-1 transition duration-300" style="background-color: var(--accent);">
+                            Sistema en Acción
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Beneficios (Consolidada) -->
+    <section id="beneficios-seccion" class="py-20 px-6 fade-in" style="background-color: var(--bg-secondary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Beneficios <span class="text-blue-600" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">Tangibles para tu Empresa</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Descubre cómo Gaval Fleet impulsa el rendimiento y la rentabilidad de tu operación.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <!-- Bloque Consolidado 1: Optimización Integral de la Flota -->
+                <div class="benefit-card rounded-2xl p-8 transition duration-300" style="background-color: var(--card-benefit-bg);">
+                    <div class="flex items-center mb-6">
+                        <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mr-4 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold" style="color: var(--text-primary);">Optimización Integral de la Flota</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-4 pl-4 text-lg" style="color: var(--text-secondary);">
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Mejora la Eficiencia Operativa:</span> Optimiza los procesos de mantenimiento y reduce tiempos muertos, aumentando la productividad general.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Maximiza la Disponibilidad:</span> Más vehículos operativos y menos tiempo en el taller se traducen en mayor capacidad de servicio.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Reduce Costos de Mantenimiento:</span> Controla gastos y evita reparaciones mayores gracias a la gestión predictiva y correctiva eficiente.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Impulsa la Rentabilidad:</span> Mayor eficiencia y menores costos se traducen directamente en un aumento significativo de las ganancias.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Facilita la Toma de Decisiones:</span> Accede a datos clave y reportes detallados en tiempo real para decisiones informadas y estratégicas.</li>
+                    </ul>
+                </div>
+                
+                <!-- Bloque Consolidado 2: Protección de Activos y Reducción de Riesgos -->
+                <div class="benefit-card rounded-2xl p-8 transition duration-300" style="background-color: var(--card-benefit-bg);">
+                    <div class="flex items-center mb-6">
+                        <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mr-4 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold" style="color: var(--text-primary);">Protección de Activos y Reducción de Riesgos</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-4 pl-4 text-lg" style="color: var(--text-secondary);">
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Aumenta la Confiabilidad:</span> Vehículos en mejor estado significan menos imprevistos y mayor confianza en la continuidad de tus operaciones.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Aumenta la Seguridad Operacional:</span> Una flota bien mantenida reduce significativamente los riesgos de accidentes y fallas inesperadas en la carretera.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Prolonga la Vida Útil de tus Activos:</span> El mantenimiento adecuado y preventivo extiende la vida útil de tus vehículos, maximizando su retorno de inversión a largo plazo.</li>
+                        <li><span class="font-semibold" style="color: var(--text-primary);">Disminuye Drásticamente las Fallas:</span> Menos interrupciones inesperadas, mayor continuidad operativa y, en consecuencia, una mayor satisfacción del cliente.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección A Quién Está Dirigido -->
+    <section class="py-20 px-6 fade-in" style="background-color: var(--bg-primary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Nuestro Software está <span class="text-blue-600" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">Diseñado Para Ti</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Si eres parte de estos roles clave, Gaval Fleet es la solución que necesitas.
+            </p>
+            <div class="flex flex-wrap justify-center gap-10">
+                <div class="directed-card rounded-2xl p-8 text-center flex flex-col items-center hover:scale-105 transition-transform duration-300" style="background-color: var(--card-directed-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <p class="text-2xl font-semibold" style="color: var(--text-primary);">Dueños de Flotas de Vehículos</p>
+                </div>
+                <div class="directed-card rounded-2xl p-8 text-center flex flex-col items-center hover:scale-105 transition-transform duration-300" style="background-color: var(--card-directed-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <p class="text-2xl font-semibold" style="color: var(--text-primary);">Gerentes de Empresas de Transportes</p>
+                </div>
+                <div class="directed-card rounded-2xl p-8 text-center flex flex-col items-center hover:scale-105 transition-transform duration-300" style="background-color: var(--card-directed-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <p class="text-2xl font-semibold" style="color: var(--text-primary);">Administradores de Flotas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Futuras Implementaciones -->
+    <section id="futuras-implementaciones" class="py-20 px-6 bg-gray-900 fade-in" style="background-color: var(--bg-secondary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Próximas <span class="text-blue-400" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">Mejoras y Funcionalidades</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Estamos en constante evolución para ofrecerte las soluciones más completas.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Futura Implementación 1: Gestión de neumáticos -->
+                <div class="future-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-future-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-tire"></i> 
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3" style="color: var(--text-primary);">Gestión de Neumáticos</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Control detallado de la vida útil, el desgaste y el rendimiento de los neumáticos para mayor seguridad y ahorro.</p>
+                </div>
+                <!-- Futura Implementación 2: Gestión de combustible -->
+                <div class="future-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-future-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3" style="color: var(--text-primary);">Gestión de Combustible</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Monitorización avanzada y optimización del consumo de combustible para reducir gastos operativos y emisiones.</p>
+                </div>
+                <!-- Futura Implementación 3: Servicio GPS -->
+                <div class="future-card rounded-2xl p-8 transition duration-300 text-center flex flex-col items-center" style="background-color: var(--card-future-bg);">
+                    <div class="feature-icon w-16 h-16 rounded-full flex items-center justify-center mb-6 text-white text-3xl shadow-md" style="background-color: var(--accent);">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3" style="color: var(--text-primary);">Servicio GPS Integrado</h3>
+                    <p class="text-lg" style="color: var(--text-secondary);">Seguimiento en tiempo real y optimización de rutas para mejorar la logística, tiempos de entrega y seguridad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Testimonios -->
+    <section id="testimonios" class="py-20 px-6 fade-in" style="background-color: var(--bg-primary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Lo que dicen <span class="text-blue-600" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">nuestros clientes</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Empresas líderes en transporte confían en nuestra solución para transformar su gestión.
+            </p>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                <!-- Testimonio 1 -->
+                <div class="service-card rounded-2xl p-8" style="background-color: var(--card-service-bg);">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Ricardo Santana" class="w-16 h-16 rounded-full mr-4 border-2 border-blue-400 shadow-md" style="border-color: var(--accent);">
+                        <div>
+                            <h4 class="font-bold text-xl" style="color: var(--text-primary);">Ricardo Santana</h4>
+                            <p class="text-md" style="color: var(--accent);">Director de Flotas, Transportes Santa Rosa</p>
+                        </div>
+                    </div>
+                    <p class="text-lg leading-relaxed" style="color: var(--text-secondary);">"Con TMS GAVAL redujimos nuestros tiempos de mantenimiento en un 30% y mejoramos la disponibilidad de nuestra flota significativamente. ¡Una herramienta indispensable!"</p>
+                    <div class="flex mt-6 text-yellow-400 text-xl">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonio 2 -->
+                <div class="service-card rounded-2xl p-8" style="background-color: var(--card-service-bg);">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="María González" class="w-16 h-16 rounded-full mr-4 border-2 border-blue-400 shadow-md" style="border-color: var(--accent);">
+                        <div>
+                            <h4 class="font-bold text-xl" style="color: var(--text-primary);">María González</h4>
+                            <p class="text-md" style="color: var(--accent);">Gerente de Operaciones, BusLink</p>
+                        </div>
+                    </div>
+                    <p class="text-lg leading-relaxed" style="color: var(--text-secondary);">"El análisis de costos nos permitió identificar áreas de gasto innecesario y optimizar nuestro presupuesto de mantenimiento de manera efectiva. ¡Altamente recomendado!"</p>
+                    <div class="flex mt-6 text-yellow-400 text-xl">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonio 3 -->
+                <div class="service-card rounded-2xl p-8" style="background-color: var(--card-service-bg);">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Carlos Méndez" class="w-16 h-16 rounded-full mr-4 border-2 border-blue-400 shadow-md" style="border-color: var(--accent);">
+                        <div>
+                            <h4 class="font-bold text-xl" style="color: var(--text-primary);">Carlos Méndez</h4>
+                            <p class="text-md" style="color: var(--accent);">Jefe de Mantenimiento, Flecha Amarilla</p>
+                        </div>
+                    </div>
+                    <p class="text-lg leading-relaxed" style="color: var(--text-secondary);">"La implementación fue sencilla y el soporte excelente. Ahora tenemos visibilidad completa de todo nuestro mantenimiento y podemos tomar decisiones proactivas."</p>
+                    <div class="flex mt-6 text-yellow-400 text-xl">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Contacto -->
+    <section id="contacto" class="py-20 px-6 bg-gray-900 fade-in" style="background-color: var(--bg-primary);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-extrabold text-center mb-6" style="color: var(--text-primary);">Contácta a <span class="text-blue-400" style="color: var(--accent); text-shadow: var(--text-shadow-subtle);">nuestro equipo</span></h2>
+            <p class="text-center max-w-3xl mx-auto mb-16 text-lg" style="color: var(--text-secondary);">
+                Estamos listos para ayudarte a optimizar la gestión de tu flota. Envíanos un mensaje o encuéntranos.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <form class="space-y-6">
+                        <div>
+                            <label for="nombre" class="block mb-2 text-lg font-medium" style="color: var(--text-secondary);">Nombre Completo</label>
+                            <input type="text" id="nombre" class="w-full px-5 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); placeholder-color: var(--input-placeholder);" placeholder="Tu nombre">
+                        </div>
+                        
+                        <div>
+                            <label for="empresa" class="block mb-2 text-lg font-medium" style="color: var(--text-secondary);">Empresa</label>
+                            <input type="text" id="empresa" class="w-full px-5 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); placeholder-color: var(--input-placeholder);" placeholder="Tu empresa">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block mb-2 text-lg font-medium" style="color: var(--text-secondary);">Correo Electrónico</label>
+                            <input type="email" id="email" class="w-full px-5 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); placeholder-color: var(--input-placeholder);" placeholder="tu.email@ejemplo.com">
+                        </div>
+                        
+                        <div>
+                            <label for="mensaje" class="block mb-2 text-lg font-medium" style="color: var(--text-secondary);">Mensaje</label>
+                            <textarea id="mensaje" rows="5" class="w-full px-5 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary); placeholder-color: var(--input-placeholder);" placeholder="Cuéntanos tus necesidades..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 transform hover:scale-105 shadow-md" style="background-color: var(--accent); hover-background-color: var(--accent-hover);">
+                            Enviar Mensaje <i class="fas fa-paper-plane ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-gray-800 rounded-xl p-8 h-full shadow-lg" style="background-color: var(--bg-card);">
+                        <h3 class="text-2xl font-bold mb-6" style="color: var(--text-primary);">Información de Contacto</h3>
+                        
+                        <div class="space-y-6 text-lg" style="color: var(--text-secondary);">
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-blue-400 text-xl mr-4 mt-1" style="color: var(--accent);"></i>
+                                <div>
+                                    <h4 class="font-bold mb-1" style="color: var(--text-primary);">Oficina Principal</h4>
+                                    <p>Av. Tecnológico 1234, Parque Industrial, Monterrey, NL</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-phone-alt text-blue-400 text-xl mr-4 mt-1" style="color: var(--accent);"></i>
+                                <div>
+                                    <h4 class="font-bold mb-1" style="color: var(--text-primary);">Teléfono</h4>
+                                    <p>+52 81 1234 5678</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-blue-400 text-xl mr-4 mt-1" style="color: var(--accent);"></i>
+                                <div>
+                                    <h4 class="font-bold mb-1" style="color: var(--text-primary);">Correo Electrónico</h4>
+                                    <p>contacto@tmsgaval.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-clock text-blue-400 text-xl mr-4 mt-1" style="color: var(--accent);"></i>
+                                <div>
+                                    <h4 class="font-bold mb-1" style="color: var(--text-primary);">Horario de Atención</h4>
+                                    <p>Lunes a Viernes: 9:00 - 18:00 hrs</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-10">
+                            <h4 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Síguenos en Redes</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="social-icon w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center transition duration-300 transform hover:scale-110 text-white text-2xl">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-icon w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center transition duration-300 transform hover:scale-110 text-white text-2xl">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-icon w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center transition duration-300 transform hover:scale-110 text-white text-2xl">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-icon w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center transition duration-300 transform hover:scale-110 text-white text-2xl">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-950 py-12 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 pb-10 border-b border-gray-800">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-truck-moving text-blue-400 text-2xl" style="color: var(--accent);"></i>
+                        <span class="text-2xl font-bold">TMS <span class="text-blue-400" style="color: var(--accent);">GAVAL</span></span>
+                    </div>
+                    <p class="text-md leading-relaxed" style="color: var(--text-secondary);">
+                        Solución líder en gestión de flotas y mantenimiento vehicular para empresas de transporte, optimizando cada kilómetro.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Enlaces Rápidos</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#inicio" class="footer-link text-md" style="color: var(--text-secondary);">Inicio</a></li>
+                        <li><a href="#servicios" class="footer-link text-md" style="color: var(--text-secondary);">Servicios</a></li>
+                        <li><a href="#funcionalidades-software" class="footer-link text-md" style="color: var(--text-secondary);">Funcionalidades Clave</a></li>
+                        <li><a href="#beneficios-seccion" class="footer-link text-md" style="color: var(--text-secondary);">Beneficios</a></li>
+                        <li><a href="#futuras-implementaciones" class="footer-link text-md" style="color: var(--text-secondary);">Futuras Implementaciones</a></li>
+                        <li><a href="#contacto" class="footer-link text-md" style="color: var(--text-secondary);">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Soluciones</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="footer-link text-md" style="color: var(--text-secondary);">Mantenimiento Predictivo</a></li>
+                        <li><a href="#" class="footer-link text-md" style="color: var(--text-secondary);">Análisis de Costos Detallado</a></li>
+                        <li><a href="#" class="footer-link text-md" style="color: var(--text-secondary);">Gestión de Órdenes Avanzada</a></li>
+                        <li><a href="#" class="footer-link text-md" style="color: var(--text-secondary);">Dashboard de KPIs</a></li>
+                        <li><a href="#" class="footer-link text-md" style="color: var(--text-secondary);">Análisis de Pareto</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Mantente Conectado</h4>
+                    <p class="text-md mb-4" style="color: var(--text-secondary);">
+                        Recibe las últimas noticias, actualizaciones y ofertas especiales directamente en tu bandeja de entrada.
+                    </p>
+                    <div class="flex">
+                        <input type="email" placeholder="Tu correo electrónico" class="px-4 py-3 rounded-l-lg focus:outline-none w-full border border-gray-700" style="background-color: var(--input-bg); border-color: var(--input-border); color: var(--text-primary); placeholder-color: var(--input-placeholder);" >
+                        <button class="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-r-lg transition duration-300 transform hover:scale-105 shadow-md" style="background-color: var(--accent); hover-background-color: var(--accent-hover);">
+                            <i class="fas fa-paper-plane text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+                <p class="text-sm mb-4 md:mb-0" style="color: var(--gray-500);">© 2025 TMS GAVAL. Todos los derechos reservados.</p>
+                <div class="flex flex-wrap justify-center space-x-6">
+                    <a href="https://www.gaval.cl" target="_blank" rel="noopener noreferrer" class="text-sm font-medium footer-link" style="color: var(--accent);">
+                        Conoce más servicios asociados a la gestión de flotas en nuestra web corporativa de Gaval.
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle dark/light mode
+        const toggle = document.getElementById('toggle');
+        const body = document.body;
+        
+        // Función para aplicar el tema
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                toggle.checked = false;
+            } else {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+                toggle.checked = true;
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        // Comprobar la preferencia del usuario guardada o usar el modo oscuro por defecto
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else {
+            // Si no hay preferencia guardada, verificar la preferencia del sistema
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                applyTheme('light');
+            } else {
+                applyTheme('dark'); // Por defecto oscuro si no hay preferencia del sistema o es oscura
+            }
+        }
+        
+        // Listener para el cambio de toggle
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        });
+        
+        // Smooth scrolling para enlaces de anclaje
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animación de entrada al hacer scroll (Scroll Reveal)
+        const sections = document.querySelectorAll('section, .animate-pop-in');
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // Aparece cuando el 10% de la sección es visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('appear');
+                    observer.unobserve(entry.target); // Dejar de observar una vez que ha aparecido
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Simulación de envío de formulario de contacto
+        const contactForm = document.querySelector('#contacto form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevenir el envío real del formulario
+
+                // Crear y mostrar un mensaje de éxito
+                let messageDiv = document.getElementById('formSuccessMessage');
+                if (!messageDiv) {
+                    messageDiv = document.createElement('div');
+                    messageDiv.id = 'formSuccessMessage';
+                    messageDiv.className = 'mt-6 p-4 rounded-lg text-center font-bold text-lg';
+                    contactForm.parentNode.insertBefore(messageDiv, contactForm.nextSibling);
+                }
+                
+                // Aplicar estilos según el modo actual
+                if (body.classList.contains('dark-mode')) {
+                    messageDiv.className = 'mt-6 p-4 rounded-lg text-center font-bold text-lg bg-green-700 text-white';
+                } else {
+                    messageDiv.className = 'mt-6 p-4 rounded-lg text-center font-bold text-lg bg-green-200 text-green-800';
+                }
+
+                messageDiv.textContent = '¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.';
+                
+                contactForm.reset(); // Limpiar el formulario
+                
+                // Ocultar el mensaje después de unos segundos
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 7000); // Mensaje visible por 7 segundos
+            });
+        }
+    </script>
+</body>
+</html>
